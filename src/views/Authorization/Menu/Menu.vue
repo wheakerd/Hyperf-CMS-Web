@@ -20,8 +20,6 @@ const { tableRegister, tableState, tableMethods } = useTable({
     fetchDataApi: async () => {
         const res = await getMenuListApi()
 
-        console.log(res.data)
-
         return {
             list: res.data || []
         }
@@ -38,8 +36,8 @@ const tableColumns = reactive<TableColumn[]>([
         type: 'index'
     },
     {
-        field: 'meta.title',
-        label: t('menu.menuName'),
+        field: 'title',
+        label: '标题',
         slots: {
             default: (data: any) => {
                 const title = data.row.title
@@ -48,7 +46,7 @@ const tableColumns = reactive<TableColumn[]>([
         }
     },
     {
-        field: 'meta.icon',
+        field: 'icon',
         label: t('menu.icon'),
         slots: {
             default: (data: any) => {
@@ -77,7 +75,7 @@ const tableColumns = reactive<TableColumn[]>([
     // },
     {
         field: 'component',
-        label: t('menu.component'),
+        label: '组件',
         slots: {
             default: (data: any) => {
                 const component = data.row.component
@@ -91,17 +89,17 @@ const tableColumns = reactive<TableColumn[]>([
     },
     {
         field: 'path',
-        label: t('menu.path')
+        label: '路径'
     },
     {
         field: 'status',
-        label: t('menu.status'),
+        label: '状态',
         slots: {
             default: (data: any) => {
                 return (
                     <>
-                        <ElTag type={data.row.status === 0 ? 'danger' : 'success'}>
-                            {data.row.status === 1 ? t('userDemo.enable') : t('userDemo.disable')}
+                        <ElTag type={data.row.status === true ? 'success' : 'danger'}>
+                            {data.row.status === true ? '启用' : '禁用'}
                         </ElTag>
                     </>
                 )
@@ -110,7 +108,7 @@ const tableColumns = reactive<TableColumn[]>([
     },
     {
         field: 'action',
-        label: t('userDemo.action'),
+        label: '操作',
         width: 240,
         slots: {
             default: (data: any) => {
