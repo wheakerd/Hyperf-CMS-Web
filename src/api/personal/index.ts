@@ -10,3 +10,10 @@ export const saveProfileApi = (data: Record<string, any>) => {
         data: data
     })
 }
+
+export const savePasswordApi = (data: Record<string, any>) => {
+    return request.post({
+        url: 'http://127.0.0.1:9500/admin/index/changePassword',
+        data: data
+    })
+}

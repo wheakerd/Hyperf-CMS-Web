@@ -4,6 +4,7 @@ import { useForm } from '@/hooks/web/useForm'
 import { reactive, ref } from 'vue'
 import { useValidator } from '@/hooks/web/useValidator'
 import { ElMessage, ElMessageBox, ElDivider } from 'element-plus'
+import { savePasswordApi } from '@/api/personal'
 
 const { required } = useValidator()
 
@@ -88,7 +89,18 @@ const save = async () => {
             type: 'warning'
         })
             .then(async () => {
+                const data = await getFormData()
+
+                if (data.newPassword !== data.newPassword2) {
+                    ElMessage.error('新密码与确认新密码不一致')
+                    return
+                }
+
+                delete data.newPassword2
+
                 try {
+                    await savePasswordApi(data)
+
                     saveLoading.value = true
                     // 这里可以调用修改密码的接口
                     ElMessage.success('修改成功')

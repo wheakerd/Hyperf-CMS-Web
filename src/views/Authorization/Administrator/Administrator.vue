@@ -4,12 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { Table } from '@/components/Table'
 import { ref, unref, nextTick, watch, reactive } from 'vue'
 import { ElTag, ElTree } from 'element-plus'
-import {
-    getDepartmentApi,
-    saveUserApi,
-    deleteUserByIdApi,
-    getAdministratorTableApi
-} from '@/api/department'
+import { getDepartmentApi, saveUserApi, deleteUserByIdApi, getAdministratorTableApi } from '@/api/department'
 import type { DepartmentItem, DepartmentUserItem } from '@/api/department/types'
 import { useTable } from '@/hooks/web/useTable'
 import { Search } from '@/components/Search'
@@ -81,8 +76,8 @@ const crudSchemas = reactive<CrudSchema[]>([
         label: '用户名'
     },
     {
-        field: 'role.name',
-        label: '角色名称',
+        field: 'role',
+        label: '角色组',
         search: {
             hidden: true
         },
@@ -101,13 +96,23 @@ const crudSchemas = reactive<CrudSchema[]>([
                     value: v.id
                 }))
             }
+        },
+        table: {
+            slots: {
+                default: (data: Record<string, any>) => {
+                    const roleName = data.row?.role?.name
+                    return <>{roleName && <ElTag type="success">{roleName}</ElTag>}</>
+                }
+            }
         }
     },
     {
         field: 'role.isSystem',
         label: '系统权限',
+        form: {
+            hidden: true
+        },
         table: {
-            width: 240,
             slots: {
                 default: (data: any) => {
                     const isSystem: boolean = data.row.role.isSystem
@@ -130,9 +135,9 @@ const crudSchemas = reactive<CrudSchema[]>([
     },
     {
         field: 'createTime',
-        label: t('userDemo.createTime'),
+        label: '创建时间',
         form: {
-            component: 'Input'
+            hidden: true
         },
         search: {
             hidden: true
@@ -152,6 +157,7 @@ const crudSchemas = reactive<CrudSchema[]>([
         },
         table: {
             width: 240,
+            align: 'center',
             slots: {
                 default: (data: any) => {
                     const row = data.row as DepartmentUserItem
@@ -190,8 +196,7 @@ const departmentList = ref<DepartmentItem[]>([])
 const fetchDepartment = async () => {
     const res = await getDepartmentApi()
     departmentList.value = res.data.list
-    currentNodeKey.value =
-        (res.data.list[0] && res.data.list[0]?.children && res.data.list[0].children[0].id) || ''
+    currentNodeKey.value = (res.data.list[0] && res.data.list[0]?.children && res.data.list[0].children[0].id) || ''
     await nextTick()
     unref(treeEl)?.setCurrentKey(currentNodeKey.value)
 }
@@ -223,9 +228,7 @@ const ids = ref<string[]>([])
 
 const delData = async (row?: DepartmentUserItem) => {
     const elTableExpose = await getElTableExpose()
-    ids.value = row
-        ? [row.id]
-        : elTableExpose?.getSelectionRows().map((v: DepartmentUserItem) => v.id) || []
+    ids.value = row ? [row.id] : elTableExpose?.getSelectionRows().map((v: DepartmentUserItem) => v.id) || []
     delLoading.value = true
 
     await delList(unref(ids).length).finally(() => {
@@ -268,19 +271,11 @@ const save = async () => {
 <template>
     <div class="flex w-100% h-100%">
         <ContentWrap class="flex-[3] ml-20px">
-            <Search
-                :schema="allSchemas.searchSchema"
-                @reset="setSearchParams"
-                @search="setSearchParams"
-            />
+            <Search :schema="allSchemas.searchSchema" @reset="setSearchParams" @search="setSearchParams" />
 
             <div class="mb-10px">
-                <BaseButton type="primary" @click="AddAction">{{
-                    t('exampleDemo.add')
-                }}</BaseButton>
-                <BaseButton :loading="delLoading" type="danger" @click="delData()">
-                    {{ t('exampleDemo.del') }}
-                </BaseButton>
+                <BaseButton type="primary" @click="AddAction">新增</BaseButton>
+                <BaseButton :loading="delLoading" type="danger" @click="delData()">删除</BaseButton>
             </div>
             <Table
                 v-model:current-page="currentPage"
@@ -303,19 +298,10 @@ const save = async () => {
                 :current-row="currentRow"
             />
 
-            <Detail
-                v-if="actionType === 'detail'"
-                :detail-schema="allSchemas.detailSchema"
-                :current-row="currentRow"
-            />
+            <Detail v-if="actionType === 'detail'" :detail-schema="allSchemas.detailSchema" :current-row="currentRow" />
 
             <template #footer>
-                <BaseButton
-                    v-if="actionType !== 'detail'"
-                    type="primary"
-                    :loading="saveLoading"
-                    @click="save"
-                >
+                <BaseButton v-if="actionType !== 'detail'" type="primary" :loading="saveLoading" @click="save">
                     {{ t('exampleDemo.save') }}
                 </BaseButton>
                 <BaseButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</BaseButton>

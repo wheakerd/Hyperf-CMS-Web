@@ -4,13 +4,7 @@ import { ComponentSize, ElCol, ElForm, ElFormItem, ElRow, FormRules } from 'elem
 import { componentMap } from './helper/componentMap'
 import { propTypes } from '@/utils/propTypes'
 import { getSlot } from '@/utils/tsxHelper'
-import {
-    initModel,
-    setComponentProps,
-    setGridProp,
-    setItemComponentSlots,
-    setTextPlaceholder
-} from './helper'
+import { initModel, setComponentProps, setGridProp, setItemComponentSlots, setTextPlaceholder } from './helper'
 import { useRenderSelect } from './components/useRenderSelect'
 import { useRenderRadio } from './components/useRenderRadio'
 import { useRenderCheckbox } from './components/useRenderCheckbox'
@@ -227,9 +221,7 @@ export default defineComponent({
                     // noinspection JSUnusedLocalSymbols
                     const Com = componentMap['Divider'] as ReturnType<typeof defineComponent>
                     return isDivider ? (
-                        <Com {...{ contentPosition: 'left', ...item.componentProps }}>
-                            {item?.label}
-                        </Com>
+                        <Com {...{ contentPosition: 'left', ...item.componentProps }}>{item?.label}</Com>
                     ) : isCol ? (
                         // 如果需要栅格，需要包裹 ElCol
                         <ElCol {...setGridProp(item.colProps)}>{renderFormItem(item)}</ElCol>
@@ -242,10 +234,7 @@ export default defineComponent({
         // 渲染formItem
         const renderFormItem = (item: FormSchema) => {
             // 如果有optionApi，优先使用optionApi, 并且options不存在或者为空数组
-            if (
-                item.optionApi &&
-                (!item.componentProps?.options || !item.componentProps?.options.length)
-            ) {
+            if (item.optionApi && (!item.componentProps?.options || !item.componentProps?.options.length)) {
                 // 内部自动调用接口，不影响其它渲染
                 getOptions(item.optionApi, item)
             }
@@ -255,9 +244,7 @@ export default defineComponent({
                         return item?.formItemProps?.slots?.default(formModel.value)
                     } else {
                         // noinspection JSUnusedLocalSymbols
-                        const Com = componentMap[item.component as string] as ReturnType<
-                            typeof defineComponent
-                        >
+                        const Com = componentMap[item.component as string] as ReturnType<typeof defineComponent>
 
                         const { autoSetPlaceholder } = unref(getProps)
 
@@ -271,19 +258,13 @@ export default defineComponent({
                                 ? () => renderSelectOptions(item)
                                 : () => {
                                       return componentSlots.default(
-                                          unref(
-                                              (item?.componentProps as SelectComponentProps)
-                                                  ?.options
-                                          )
+                                          unref((item?.componentProps as SelectComponentProps)?.options)
                                       )
                                   }
                         }
 
                         // 虚拟列表
-                        if (
-                            item.component === ComponentNameEnum.SELECT_V2 &&
-                            componentSlots.default
-                        ) {
+                        if (item.component === ComponentNameEnum.SELECT_V2 && componentSlots.default) {
                             slotsMap.default = ({ item }) => {
                                 return componentSlots.default(item)
                             }
@@ -298,10 +279,7 @@ export default defineComponent({
                                 ? () => renderRadioOptions(item)
                                 : () => {
                                       return componentSlots.default(
-                                          unref(
-                                              (item?.componentProps as CheckboxGroupComponentProps)
-                                                  ?.options
-                                          )
+                                          unref((item?.componentProps as CheckboxGroupComponentProps)?.options)
                                       )
                                   }
                         }
@@ -315,10 +293,7 @@ export default defineComponent({
                                 ? () => renderCheckboxOptions(item)
                                 : () => {
                                       return componentSlots.default(
-                                          unref(
-                                              (item?.componentProps as RadioGroupComponentProps)
-                                                  ?.options
-                                          )
+                                          unref((item?.componentProps as RadioGroupComponentProps)?.options)
                                       )
                                   }
                         }

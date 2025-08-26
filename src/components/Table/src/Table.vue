@@ -47,13 +47,9 @@ export default defineComponent({
         // 是否叠加索引
         reserveIndex: propTypes.bool.def(false),
         // 对齐方式
-        align: propTypes.string
-            .validate((v: string) => ['left', 'center', 'right'].includes(v))
-            .def('left'),
+        align: propTypes.string.validate((v: string) => ['left', 'center', 'right'].includes(v)).def('left'),
         // 表头对齐方式
-        headerAlign: propTypes.string
-            .validate((v: string) => ['left', 'center', 'right'].includes(v))
-            .def('left'),
+        headerAlign: propTypes.string.validate((v: string) => ['left', 'center', 'right'].includes(v)).def('left'),
         data: {
             type: Array as PropType<Recordable[]>,
             default: () => []
@@ -82,21 +78,15 @@ export default defineComponent({
         currentRowKey: propTypes.oneOfType([Number, String]),
         // row-class-name, 类型为 (row: Recordable, rowIndex: number) => string | string
         rowClassName: {
-            type: [Function, String] as PropType<
-                (row: Recordable, rowIndex: number) => string | string
-            >,
+            type: [Function, String] as PropType<(row: Recordable, rowIndex: number) => string | string>,
             default: ''
         },
         rowStyle: {
-            type: [Function, Object] as PropType<
-                (row: Recordable, rowIndex: number) => Recordable | CSSProperties
-            >,
+            type: [Function, Object] as PropType<(row: Recordable, rowIndex: number) => Recordable | CSSProperties>,
             default: undefined
         },
         cellClassName: {
-            type: [Function, String] as PropType<
-                (row: Recordable, column: any, rowIndex: number) => string | string
-            >,
+            type: [Function, String] as PropType<(row: Recordable, column: any, rowIndex: number) => string | string>,
             default: ''
         },
         cellStyle: {
@@ -106,21 +96,15 @@ export default defineComponent({
             default: undefined
         },
         headerRowClassName: {
-            type: [Function, String] as PropType<
-                (row: Recordable, rowIndex: number) => string | string
-            >,
+            type: [Function, String] as PropType<(row: Recordable, rowIndex: number) => string | string>,
             default: ''
         },
         headerRowStyle: {
-            type: [Function, Object] as PropType<
-                (row: Recordable, rowIndex: number) => Recordable | CSSProperties
-            >,
+            type: [Function, Object] as PropType<(row: Recordable, rowIndex: number) => Recordable | CSSProperties>,
             default: undefined
         },
         headerCellClassName: {
-            type: [Function, String] as PropType<
-                (row: Recordable, column: any, rowIndex: number) => string | string
-            >,
+            type: [Function, String] as PropType<(row: Recordable, column: any, rowIndex: number) => string | string>,
             default: ''
         },
         headerCellStyle: {
@@ -348,8 +332,7 @@ export default defineComponent({
         })
 
         const renderTreeTableColumn = (columnsChildren: TableColumn[]) => {
-            const { align, headerAlign, showOverflowTooltip, imagePreview, videoPreview } =
-                unref(getProps)
+            const { align, headerAlign, showOverflowTooltip, imagePreview, videoPreview } = unref(getProps)
             return columnsChildren.map((v) => {
                 if (v.hidden) return null
                 const props = { ...v } as any
@@ -370,12 +353,7 @@ export default defineComponent({
                             : props?.slots?.default
                               ? props.slots.default(...args)
                               : v?.formatter
-                                ? v?.formatter?.(
-                                      data.row,
-                                      data.column,
-                                      get(data.row, v.field),
-                                      data.$index
-                                  )
+                                ? v?.formatter?.(data.row, data.column, get(data.row, v.field), data.$index)
                                 : isPreview
                                   ? renderPreview(get(data.row, v.field), v.field)
                                   : get(data.row, v.field)
@@ -449,12 +427,7 @@ export default defineComponent({
                     return (
                         <ElTableColumn
                             type="index"
-                            index={
-                                v.index
-                                    ? v.index
-                                    : (index) =>
-                                          setIndex(reserveIndex, index, pageSize, currentPage)
-                            }
+                            index={v.index ? v.index : (index) => setIndex(reserveIndex, index, pageSize, currentPage)}
                             align={v.align || align}
                             headerAlign={v.headerAlign || headerAlign}
                             label={v.label}
@@ -493,12 +466,7 @@ export default defineComponent({
                                 : props?.slots?.default
                                   ? props.slots.default(...args)
                                   : v?.formatter
-                                    ? v?.formatter?.(
-                                          data.row,
-                                          data.column,
-                                          get(data.row, v.field),
-                                          data.$index
-                                      )
+                                    ? v?.formatter?.(data.row, data.column, get(data.row, v.field), data.$index)
                                     : isPreview
                                       ? renderPreview(get(data.row, v.field), v.field)
                                       : get(data.row, v.field)
@@ -580,11 +548,7 @@ export default defineComponent({
                                     onConfirm={confirmSetColumn}
                                 />
                             ) : null}
-                            <ElTable
-                                ref={elTableRef}
-                                data={unref(getProps).data}
-                                {...unref(getBindValue)}
-                            >
+                            <ElTable ref={elTableRef} data={unref(getProps).data} {...unref(getBindValue)}>
                                 {{
                                     default: () => renderTableColumn(),
                                     ...tableSlots
